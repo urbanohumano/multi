@@ -15,6 +15,7 @@ export interface Category {
   label: string;
   emoji: string;
   color: string; // tailwind gradient classes
+  pin: string; // hex color for map markers
 }
 
 export type DiscountType = "porcentaje" | "2x1" | "fijo" | "regalo";

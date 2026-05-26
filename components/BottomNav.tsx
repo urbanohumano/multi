@@ -6,6 +6,7 @@ import { useWallet } from "@/lib/WalletContext";
 
 const TABS = [
   { href: "/", label: "Explorar", icon: "🔍" },
+  { href: "/mapa", label: "Mapa", icon: "🗺️" },
   { href: "/cerca", label: "Cerca", icon: "📍" },
   { href: "/wallet", label: "Cartera", icon: "🎟️" },
 ];
@@ -16,7 +17,7 @@ export default function BottomNav() {
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-md border-t border-slate-200 bg-white/95 backdrop-blur">
-      <div className="grid grid-cols-3">
+      <div className="grid grid-cols-4">
         {TABS.map((tab) => {
           const active =
             tab.href === "/"
