@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "podcastedit"
+version = "0.1.0"
+description = "Edición automática de audio para podcasts en Linux (intro/outro + mejora de voz) sobre ffmpeg."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+keywords = ["podcast", "audio", "ffmpeg", "intro", "outro", "loudnorm"]
+
+[project.scripts]
+podcast-edit = "podcastedit.cli:main"
+
+[tool.setuptools]
+packages = ["podcastedit"]
