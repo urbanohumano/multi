@@ -35,12 +35,15 @@ Busca el texto entre corchetes y sustitúyelo:
 
 ### Añadir tu foto
 
-Sustituye el bloque `.about__portrait` en `index.html` por:
+El hueco ya está listo como `<img>` en «Sobre mí», apuntando a una imagen de
+prueba (`assets/retrato.svg`). Para poner tu foto, tienes dos opciones:
 
-```html
-<img class="about__portrait" src="assets/retrato.jpg"
-     alt="Retrato de [TU NOMBRE]" width="800" height="1000" />
-```
+1. **Fácil:** guarda tu retrato como `assets/retrato.jpg` y cambia el `src` en
+   `index.html` a `assets/retrato.jpg`.
+2. O reemplaza directamente el archivo `assets/retrato.svg` por el tuyo.
+
+Proporción ideal **4:5** (p. ej. 800×1000). El recorte se ajusta solo con
+`object-fit: cover`.
 
 ## Personalizar el diseño
 

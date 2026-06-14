@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" role="img" aria-label="Foto de prueba — retrato de Domenico Disciena">
+  <defs>
+    <pattern id="hatch" width="18" height="18" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <rect width="18" height="18" fill="#E8E5DC"/>
+      <line x1="0" y1="0" x2="0" y2="18" stroke="#EFEDE6" stroke-width="9"/>
+    </pattern>
+  </defs>
+
+  <!-- fondo -->
+  <rect width="800" height="1000" fill="url(#hatch)"/>
+
+  <!-- filete interior, como las láminas del dossier -->
+  <rect x="14" y="14" width="772" height="972" fill="none" stroke="#1A1813" stroke-width="1.5"/>
+  <rect x="26" y="26" width="748" height="948" fill="none" stroke="#C9C5BA" stroke-width="1"/>
+
+  <!-- monograma -->
+  <text x="400" y="540" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-style="italic" font-size="360" fill="#7C1D2A">D</text>
+
+  <!-- etiqueta superior -->
+  <text x="400" y="120" text-anchor="middle" font-family="ui-monospace, 'Courier New', monospace" font-size="22" letter-spacing="6" fill="#56534A">FIG. 2 — RETRATO</text>
+
+  <!-- pie -->
+  <text x="400" y="900" text-anchor="middle" font-family="ui-monospace, 'Courier New', monospace" font-size="24" letter-spacing="5" fill="#56534A">FOTO DE PRUEBA</text>
+  <text x="400" y="936" text-anchor="middle" font-family="ui-monospace, 'Courier New', monospace" font-size="16" letter-spacing="2" fill="#8B8779">Sustituye este archivo por tu retrato</text>
+</svg>

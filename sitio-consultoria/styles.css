@@ -393,21 +393,11 @@ a { color: inherit; }
   align-items: start;
 }
 .about__portrait {
-  position: relative;
+  width: 100%;
   aspect-ratio: 4 / 5;
+  object-fit: cover;             /* una foto real llena el marco sin deformarse */
   border: 1px solid var(--ink);
-  background:
-    repeating-linear-gradient(135deg, var(--paper-2) 0 7px, var(--paper) 7px 14px);
-  display: grid; place-items: center;
-}
-.about__initials {
-  font-family: var(--display); font-style: italic; font-weight: 400;
-  font-size: clamp(4rem, 14vw, 8rem); color: var(--accent);
-}
-.about__portrait-note {
-  position: absolute; bottom: 0.8rem; left: 0; right: 0; text-align: center;
-  font-family: var(--mono); font-size: var(--t-xs); color: var(--muted);
-  letter-spacing: 0.08em; text-transform: uppercase;
+  background: var(--paper-2);    /* fondo mientras carga */
 }
 .about__text p { max-width: var(--measure); margin-top: 1rem; }
 .about__text p:first-of-type { margin-top: 1.4rem; }
