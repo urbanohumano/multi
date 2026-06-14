@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Borrador: evitar indexación mientras haya placeholders. Quita esta línea al publicar la versión final. -->
+  <meta name="robots" content="noindex, nofollow" />
+
+  <!-- ╔══════════════════════════════════════════════════════════════╗
+       ║  Nombre y email: YA configurados (Domenico Disciena).          ║
+       ║  PENDIENTE de reemplazar (placeholders):                       ║
+       ║  · [TU CALENDARIO] → enlace a Calendly/Cal.com (ahora va al    ║
+       ║      email de forma temporal)                                  ║
+       ║  · Casos 1–3       → cifras reales                             ║
+       ║  · Testimonio      → cita + autor reales                       ║
+       ║  · Foto            → retrato real en «Sobre mí»                ║
+       ╚══════════════════════════════════════════════════════════════╝ -->
+
+  <title>Domenico Disciena — Consultoría de IA & Software</title>
+  <meta name="description" content="Consultor de IA y software. Llevo proyectos de inteligencia artificial del prototipo prometedor a producción fiable, con código que tu equipo puede mantener." />
+  <meta name="author" content="Domenico Disciena" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Domenico Disciena — Consultoría de IA & Software" />
+  <meta property="og:description" content="Del prototipo prometedor a producción fiable. IA útil, sin humo y sin dependencia eterna." />
+  <meta property="og:locale" content="es_ES" />
+  <meta name="theme-color" content="#EFEDE6" />
+
+  <!-- Favicon: monograma en línea, sin peticiones extra -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23EFEDE6'/%3E%3Ctext x='16' y='23' font-family='Georgia,serif' font-size='22' font-style='italic' text-anchor='middle' fill='%237C1D2A'%3ED%3C/text%3E%3C/svg%3E" />
+
+  <!-- Tipografía: precarga + display swap para evitar texto invisible -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <a class="skip-link" href="#contenido">Saltar al contenido</a>
+
+  <!-- ══════════════════ MASTHEAD ══════════════════ -->
+  <header class="masthead" id="top">
+    <div class="masthead__inner">
+      <a class="wordmark" href="#top" aria-label="Inicio">
+        <span class="wordmark__name">Domenico Disciena</span>
+        <span class="wordmark__role">Consultoría · IA &amp; Software</span>
+      </a>
+
+      <nav class="nav" aria-label="Principal">
+        <button class="nav__toggle" aria-expanded="false" aria-controls="nav-menu">
+          <span class="nav__toggle-label">Índice</span>
+          <span class="nav__toggle-bars" aria-hidden="true"><i></i><i></i></span>
+        </button>
+        <ul class="nav__menu" id="nav-menu">
+          <li><a href="#servicios">Servicios</a></li>
+          <li><a href="#casos">Casos</a></li>
+          <li><a href="#metodo">Método</a></li>
+          <li><a href="#sobre-mi">Sobre mí</a></li>
+          <li><a class="nav__cta" href="#contacto">Reservar llamada</a></li>
+        </ul>
+      </nav>
+
+      <p class="masthead__meta" aria-hidden="true">
+        <span>Guía de campo</span>
+        <span>Vol. 01</span>
+        <span data-issue-year>MMXXVI</span>
+        <span class="dot">·</span>
+        <span>En remoto · CET</span>
+      </p>
+    </div>
+  </header>
+
+  <main id="contenido">
+
+    <!-- ══════════════════ HERO / TESIS ══════════════════ -->
+    <section class="hero" aria-labelledby="tesis">
+      <div class="hero__text">
+        <p class="eyebrow">Guía de campo — Nº 01 / Llevar la IA a producción</p>
+        <h1 class="hero__headline" id="tesis">
+          La mayoría de los proyectos de IA no fracasan por el modelo.
+          <em>Fracasan por todo lo demás.</em>
+        </h1>
+        <p class="hero__deck">
+          Soy consultor de IA y software. Llevo ideas desde el prototipo que
+          impresiona en la demo hasta un sistema que funciona el lunes por la
+          mañana — evaluado, medible y mantenible. Sin humo, sin caja negra y
+          sin que dependáis de mí para siempre.
+        </p>
+        <div class="hero__actions">
+          <a class="btn btn--primary" href="#contacto">Reservar una llamada</a>
+          <a class="btn btn--ghost" href="#casos">Ver casos <span aria-hidden="true">↓</span></a>
+        </div>
+        <p class="hero__credentials">
+          <span>+10 años en software</span>
+          <span class="rule" aria-hidden="true"></span>
+          <span>Sistemas de IA en producción</span>
+          <span class="rule" aria-hidden="true"></span>
+          <span>Equipos de toda Europa</span>
+        </p>
+      </div>
+
+      <!-- Firma visual: lámina de grabado «Fig. 1» -->
+      <figure class="plate" aria-labelledby="fig1-cap">
+        <div class="plate__frame">
+          <svg class="diagram" viewBox="0 0 320 300" role="img" aria-label="Diagrama: del dato a un producto fiable, pasando por modelo y evaluación.">
+            <defs>
+              <pattern id="stipple" width="4" height="4" patternUnits="userSpaceOnUse">
+                <circle cx="1" cy="1" r="0.5" fill="currentColor" opacity="0.5" />
+              </pattern>
+            </defs>
+            <!-- conexiones -->
+            <g class="diagram__edges">
+              <path d="M70 70 C 140 70, 150 150, 160 150" />
+              <path d="M70 230 C 140 230, 150 150, 160 150" />
+              <path d="M180 150 C 220 150, 220 110, 250 90" />
+              <path d="M180 150 C 220 150, 220 190, 250 210" />
+              <path d="M250 90 C 285 110, 285 190, 250 210" />
+            </g>
+            <!-- nodos -->
+            <g class="diagram__nodes">
+              <g class="node"><circle cx="60" cy="70" r="18" /><text x="60" y="44" class="node__tag">01</text></g>
+              <g class="node"><circle cx="60" cy="230" r="18" /><text x="60" y="266" class="node__tag">02</text></g>
+              <g class="node node--core"><circle cx="170" cy="150" r="26" fill="url(#stipple)" /><circle cx="170" cy="150" r="26" class="node__ring" /><text x="170" y="118" class="node__tag">03</text></g>
+              <g class="node"><circle cx="250" cy="90" r="16" /><text x="250" y="66" class="node__tag">04</text></g>
+              <g class="node"><circle cx="250" cy="210" r="16" /><text x="250" y="240" class="node__tag">05</text></g>
+            </g>
+          </svg>
+        </div>
+        <figcaption id="fig1-cap" class="plate__caption">
+          <strong>Fig. 1</strong> — Anatomía de un sistema que sí llega a producción.
+          <span class="plate__legend">
+            01 datos · 02 contexto · 03 modelo + guardarraíles · 04 evaluación · 05 producto
+          </span>
+        </figcaption>
+      </figure>
+    </section>
+
+    <!-- ══════════════════ SERVICIOS ══════════════════ -->
+    <section class="section section--services" id="servicios" aria-labelledby="servicios-titulo">
+      <header class="section__head">
+        <p class="section__kicker">Sección I</p>
+        <h2 class="section__title" id="servicios-titulo">En qué ayudo</h2>
+        <p class="section__lede">
+          Trabajo en las cuatro etapas donde los proyectos de IA suelen
+          atascarse. Puedes contratarme para una sola o para el recorrido entero.
+        </p>
+      </header>
+
+      <ol class="services">
+        <li class="service">
+          <span class="service__num" aria-hidden="true">01</span>
+          <h3 class="service__name">Estrategia de IA</h3>
+          <p class="service__desc">
+            Decidir qué construir <em>y qué no</em>. Auditoría de oportunidades,
+            casos de uso priorizados por valor y riesgo, y un plan que cabe en
+            un trimestre — no en un PowerPoint de cien páginas.
+          </p>
+        </li>
+        <li class="service">
+          <span class="service__num" aria-hidden="true">02</span>
+          <h3 class="service__name">De prototipo a producción</h3>
+          <p class="service__desc">
+            Esa demo que funciona «a veces», convertida en un sistema fiable:
+            evaluación automática, guardarraíles, observabilidad y costes de
+            inferencia bajo control.
+          </p>
+        </li>
+        <li class="service">
+          <span class="service__num" aria-hidden="true">03</span>
+          <h3 class="service__name">Desarrollo a medida</h3>
+          <p class="service__desc">
+            Construyo contigo: RAG, agentes, automatización e integración con
+            tus sistemas. Código documentado que tu equipo hereda, no una caja
+            negra que nadie se atreve a tocar.
+          </p>
+        </li>
+        <li class="service">
+          <span class="service__num" aria-hidden="true">04</span>
+          <h3 class="service__name">Equipo y formación</h3>
+          <p class="service__desc">
+            Dejo capacidad instalada: revisión de arquitectura, buenas prácticas
+            y formación para que el lunes siguiente a mi marcha todo siga en pie.
+          </p>
+        </li>
+      </ol>
+    </section>
+
+    <!-- ══════════════════ CASOS ══════════════════ -->
+    <section class="section section--cases" id="casos" aria-labelledby="casos-titulo">
+      <header class="section__head">
+        <p class="section__kicker">Sección II</p>
+        <h2 class="section__title" id="casos-titulo">Casos seleccionados</h2>
+        <p class="section__lede">
+          Tres encargos recientes. <em>(Sustituye las cifras por las tuyas.)</em>
+        </p>
+      </header>
+
+      <!-- ╔═ CASOS ════════════════════════════════════════════════════╗
+           Rellena cada <article> con un proyecto real. Por caso:
+           · case__sector  → "Sector · Área"  (ej.: "SaaS B2B · Soporte")
+           · case__title   → título del caso  (ej.: "Atención al cliente con IA")
+           · case__body    → problema → solución en 1–2 frases
+           · case__metric  → cifra            (ej.: "−40 %")  + qué mejoró
+           Si tienes página de caso de estudio, envuelve el título en <a>.    ╚════╝ -->
+      <div class="cases">
+        <article class="case">
+          <p class="case__sector">[Sector · Área]</p>
+          <h3 class="case__title">[Título del caso 1]</h3>
+          <p class="case__body">[Describe en 1–2 frases el problema del cliente y qué construiste para resolverlo.]</p>
+          <p class="case__result"><span class="case__metric">[00 %]</span> [resultado medible]<sup>1</sup></p>
+        </article>
+
+        <article class="case">
+          <p class="case__sector">[Sector · Área]</p>
+          <h3 class="case__title">[Título del caso 2]</h3>
+          <p class="case__body">[Describe en 1–2 frases el problema del cliente y qué construiste para resolverlo.]</p>
+          <p class="case__result"><span class="case__metric">[00 %]</span> [resultado medible]<sup>2</sup></p>
+        </article>
+
+        <article class="case">
+          <p class="case__sector">[Sector · Área]</p>
+          <h3 class="case__title">[Título del caso 3]</h3>
+          <p class="case__body">[Describe en 1–2 frases el problema del cliente y qué construiste para resolverlo.]</p>
+          <p class="case__result"><span class="case__metric">[00 %]</span> [resultado medible]<sup>3</sup></p>
+        </article>
+      </div>
+      <p class="cases__footnote">
+        <sup>1–3</sup> Espacios reservados. Sustituye cada caso por un proyecto real y, si puedes, enlaza el caso de estudio.
+      </p>
+    </section>
+
+    <!-- ══════════════════ MÉTODO ══════════════════ -->
+    <section class="section section--method" id="metodo" aria-labelledby="metodo-titulo">
+      <header class="section__head">
+        <p class="section__kicker">Sección III</p>
+        <h2 class="section__title" id="metodo-titulo">Cómo trabajo</h2>
+        <p class="section__lede">
+          Ciclos cortos con algo que funciona cada semana. Nada de grandes
+          revelaciones a los seis meses.
+        </p>
+      </header>
+
+      <ol class="method">
+        <li class="step">
+          <p class="step__num">01</p>
+          <div class="step__body">
+            <h3 class="step__name">Diagnóstico</h3>
+            <p>Una semana entendiendo tu negocio, tus datos y cuál es el objetivo de verdad — el de negocio, no el técnico.</p>
+          </div>
+          <p class="step__dur">~1 semana</p>
+        </li>
+        <li class="step">
+          <p class="step__num">02</p>
+          <div class="step__body">
+            <h3 class="step__name">Plan</h3>
+            <p>Un documento corto y honesto: qué, por qué, cuánto cuesta y en qué orden. Con lo que conviene <em>no</em> hacer.</p>
+          </div>
+          <p class="step__dur">~1 semana</p>
+        </li>
+        <li class="step">
+          <p class="step__num">03</p>
+          <div class="step__body">
+            <h3 class="step__name">Construcción</h3>
+            <p>Iteraciones cortas y demos frecuentes. Ves el avance real, no diapositivas de avance.</p>
+          </div>
+          <p class="step__dur">por sprints</p>
+        </li>
+        <li class="step">
+          <p class="step__num">04</p>
+          <div class="step__body">
+            <h3 class="step__name">Traspaso</h3>
+            <p>Documentación, formación y un equipo que puede seguir solo. El éxito es que dejes de necesitarme.</p>
+          </div>
+          <p class="step__dur">continuo</p>
+        </li>
+      </ol>
+    </section>
+
+    <!-- ══════════════════ CITA / TESTIMONIO ══════════════════ -->
+    <!-- Sustituye por una cita real. Funciona mejor si es breve y concreta.
+         Ejemplo: «Nos ahorró meses de callejones sin salida. Por fin alguien
+         capaz de decir 'esto no merece la pena construirlo'.» — Ana López, CTO en Acme -->
+    <section class="quote" aria-label="Testimonio">
+      <blockquote class="quote__text">
+        <p>[Escribe aquí una frase breve y concreta de un cliente satisfecho.
+        Resalta lo más memorable con <em>énfasis</em>.]</p>
+        <cite class="quote__cite">— [Nombre], [Cargo] en [Empresa]</cite>
+      </blockquote>
+    </section>
+
+    <!-- ══════════════════ SOBRE MÍ ══════════════════ -->
+    <section class="section section--about" id="sobre-mi" aria-labelledby="about-titulo">
+      <div class="about">
+        <!-- Reemplaza el src por tu foto (ideal 4:5, p. ej. assets/retrato.jpg) -->
+        <img class="about__portrait" src="assets/retrato.svg"
+             alt="Retrato de Domenico Disciena"
+             width="800" height="1000" loading="lazy" decoding="async" />
+        <div class="about__text">
+          <p class="section__kicker">Sección IV</p>
+          <h2 class="section__title" id="about-titulo">Sobre mí</h2>
+          <p>
+            Llevo más de una década construyendo software y, los últimos años,
+            sistemas de IA que de verdad llegan a producción. He sido ingeniero
+            y responsable técnico, y he visto de cerca por qué los proyectos de
+            IA se quedan a medias: rara vez es el modelo.
+          </p>
+          <p>
+            Creo en la <strong>IA útil y aburrida</strong>: la que ahorra horas,
+            reduce errores y no necesita una rueda de prensa. Trabajo en remoto
+            con equipos de toda Europa y me gusta dejar el sitio mejor de como
+            lo encontré — y a tu equipo, más autónomo.
+          </p>
+          <ul class="about__facts">
+            <li><span>Especialidad</span> RAG · agentes · evaluación · MLOps</li>
+            <li><span>Stack</span> Python · TypeScript · cloud a tu gusto</li>
+            <li><span>Modalidad</span> Proyectos cerrados o por horas</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════ CONTACTO / CIERRE ══════════════════ -->
+    <section class="contact" id="contacto" aria-labelledby="contacto-titulo">
+      <p class="eyebrow eyebrow--center">Colofón</p>
+      <h2 class="contact__title" id="contacto-titulo">
+        ¿Tienes un proyecto de IA que no termina de despegar?
+      </h2>
+      <p class="contact__lede">
+        Cuéntame en qué estás. Si puedo ayudarte, te lo digo; y si no, también.
+        La primera llamada es gratis y sin compromiso.
+      </p>
+      <div class="contact__actions">
+        <a class="btn btn--primary btn--lg" href="mailto:hola@urbanohumano.com?subject=Quiero%20reservar%20una%20llamada">Reservar una llamada</a>
+        <a class="btn btn--ghost btn--lg" href="mailto:hola@urbanohumano.com">hola@urbanohumano.com</a>
+      </div>
+    </section>
+  </main>
+
+  <!-- ══════════════════ COLOFÓN / PIE ══════════════════ -->
+  <footer class="colophon">
+    <div class="colophon__inner">
+      <p class="colophon__brand">Domenico Disciena — Consultoría de IA &amp; Software</p>
+      <p class="colophon__meta">
+        <span>Hecho con intención</span>
+        <span class="dot">·</span>
+        <span data-issue-year>MMXXVI</span>
+        <span class="dot">·</span>
+        <span>Guía de campo Nº 01</span>
+      </p>
+    </div>
+  </footer>
+
+  <script src="main.js" defer></script>
+</body>
+</html>
