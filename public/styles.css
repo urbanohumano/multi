@@ -1,0 +1,167 @@
+:root {
+  --ink: #1f2430;
+  --muted: #6b7280;
+  --accent: #b3541e;
+  --accent-dark: #8f4014;
+  --paper: #faf6ef;
+  --card: #ffffff;
+  --border: #e4ddd0;
+  --error: #b42318;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.hidden { display: none !important; }
+
+.brand {
+  font-family: Georgia, serif;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: bold;
+}
+h1.brand { font-size: 1.8rem; text-align: center; margin: 0 0 0.4rem; }
+.brand.small { font-size: 1rem; }
+
+/* ---------- Acceso ---------- */
+.auth-wrap {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.auth-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 2.5rem 2rem;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 8px 30px rgba(31, 36, 48, 0.08);
+}
+.tagline { text-align: center; color: var(--muted); margin: 0 0 1.5rem; line-height: 1.5; }
+.auth-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.2rem; }
+.auth-tab {
+  flex: 1; padding: 0.55rem; border: 1px solid var(--border); background: transparent;
+  border-radius: 8px; cursor: pointer; font-family: inherit; font-size: 0.95rem; color: var(--muted);
+}
+.auth-tab.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+form input, form textarea, form select {
+  width: 100%; padding: 0.65rem 0.75rem; margin-bottom: 0.7rem;
+  border: 1px solid var(--border); border-radius: 8px;
+  font-family: inherit; font-size: 1rem; background: #fffdfa; color: var(--ink);
+}
+form textarea { resize: vertical; }
+
+.btn {
+  padding: 0.6rem 1.2rem; border-radius: 8px; border: none; cursor: pointer;
+  font-family: inherit; font-size: 0.95rem;
+}
+.btn.primary { background: var(--accent); color: #fff; width: auto; }
+.btn.primary:hover { background: var(--accent-dark); }
+.btn.ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+.btn.tiny { padding: 0.3rem 0.7rem; font-size: 0.82rem; }
+form .btn.primary { width: 100%; }
+.inline-form { display: flex; gap: 0.6rem; }
+.inline-form input { margin-bottom: 0; flex: 1; }
+.inline-form .btn.primary { width: auto; white-space: nowrap; }
+
+.error { color: var(--error); font-size: 0.9rem; margin: 0.6rem 0 0; }
+.empty, .muted { color: var(--muted); }
+.empty { font-style: italic; text-align: center; padding: 1.5rem 0; }
+
+/* ---------- Barra superior ---------- */
+.topbar {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  padding: 0.7rem 1.2rem; background: var(--card); border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 10;
+}
+.topbar nav { display: flex; gap: 0.3rem; }
+.nav-btn {
+  background: transparent; border: none; padding: 0.5rem 0.9rem; cursor: pointer;
+  font-family: inherit; font-size: 0.95rem; color: var(--muted); border-radius: 8px;
+}
+.nav-btn.active { color: var(--accent); font-weight: bold; background: var(--paper); }
+.topbar-right { display: flex; align-items: center; gap: 0.7rem; color: var(--muted); font-size: 0.9rem; }
+.badge {
+  background: var(--accent); color: #fff; border-radius: 999px;
+  font-size: 0.7rem; padding: 0.1rem 0.45rem; vertical-align: top;
+}
+
+main { max-width: 680px; margin: 1.5rem auto 4rem; padding: 0 1rem; }
+
+.card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+  padding: 1.2rem 1.4rem; margin-bottom: 1.2rem;
+}
+.card h2 { margin: 0 0 0.8rem; font-size: 1.1rem; }
+
+/* ---------- Composer ---------- */
+.composer-tabs { display: flex; gap: 0.4rem; margin-bottom: 0.9rem; }
+.ctab {
+  border: 1px solid var(--border); background: transparent; border-radius: 999px;
+  padding: 0.35rem 0.9rem; cursor: pointer; font-family: inherit; font-size: 0.88rem; color: var(--muted);
+}
+.ctab.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.composer-footer { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.composer-footer .btn.primary { width: auto; }
+.hint { font-size: 0.82rem; color: var(--muted); font-style: italic; }
+.ref-row { display: flex; gap: 0.6rem; }
+.ref-row select { width: auto; }
+.ref-row input { flex: 1; }
+
+/* ---------- Publicaciones ---------- */
+.post { margin-bottom: 1rem; }
+.post-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 0.5rem; }
+.post-author { font-weight: bold; color: var(--accent-dark); }
+.post-meta { color: var(--muted); font-size: 0.8rem; }
+.post-text { line-height: 1.55; white-space: pre-wrap; margin: 0; }
+.post img.post-photo {
+  max-width: 100%; border-radius: 8px; display: block; margin-bottom: 0.5rem;
+  border: 1px solid var(--border);
+}
+.post .caption { font-style: italic; color: var(--muted); }
+.ref-card {
+  border-left: 4px solid var(--accent); background: #fffdf8;
+  border-radius: 0 8px 8px 0; padding: 0.7rem 1rem; margin: 0.2rem 0;
+}
+.ref-kind { text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.12em; color: var(--accent); }
+.ref-title { font-weight: bold; font-size: 1.05rem; margin: 0.15rem 0; }
+.ref-detail { color: var(--muted); font-size: 0.9rem; }
+.post-delete { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 0.8rem; }
+.post-delete:hover { color: var(--error); }
+
+/* ---------- Amistades ---------- */
+.people-list { list-style: none; margin: 0; padding: 0; }
+.people-list li {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.55rem 0; border-bottom: 1px solid var(--border);
+}
+.people-list li:last-child { border-bottom: none; }
+.person-name { font-weight: bold; }
+.person-username { color: var(--muted); font-size: 0.85rem; margin-left: 0.4rem; }
+.person-actions { display: flex; gap: 0.4rem; }
+
+/* ---------- Revistas ---------- */
+.magazine-item {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+  padding: 1rem 1.4rem; margin-bottom: 0.8rem;
+}
+.magazine-title { font-weight: bold; font-size: 1.05rem; }
+.magazine-meta { color: var(--muted); font-size: 0.85rem; }
+
+@media (max-width: 560px) {
+  .topbar { flex-wrap: wrap; }
+  .inline-form { flex-direction: column; }
+  .ref-row { flex-direction: column; }
+}

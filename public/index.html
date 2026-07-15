@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vínculo — fotos, mensajes y referencias entre amigos</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Pantalla de acceso -->
+  <section id="auth-view" class="auth-wrap hidden">
+    <div class="auth-card">
+      <h1 class="brand">Vínculo</h1>
+      <p class="tagline">Fotos, mensajes y referencias entre amigos.<br/>Sin enlaces. Con revista impresa cada mes.</p>
+
+      <div class="auth-tabs">
+        <button id="tab-login" class="auth-tab active">Entrar</button>
+        <button id="tab-register" class="auth-tab">Crear cuenta</button>
+      </div>
+
+      <form id="login-form">
+        <input id="login-username" placeholder="Nombre de usuario" autocomplete="username" required />
+        <input id="login-password" type="password" placeholder="Contraseña" autocomplete="current-password" required />
+        <button type="submit" class="btn primary">Entrar</button>
+      </form>
+
+      <form id="register-form" class="hidden">
+        <input id="reg-displayname" placeholder="Tu nombre (como te verán tus amigos)" required />
+        <input id="reg-username" placeholder="Nombre de usuario (letras y números)" autocomplete="username" required />
+        <input id="reg-password" type="password" placeholder="Contraseña (mín. 6 caracteres)" autocomplete="new-password" required />
+        <button type="submit" class="btn primary">Crear cuenta</button>
+      </form>
+
+      <p id="auth-error" class="error hidden"></p>
+    </div>
+  </section>
+
+  <!-- Aplicación -->
+  <div id="app-view" class="hidden">
+    <header class="topbar">
+      <span class="brand small">Vínculo</span>
+      <nav>
+        <button data-nav="feed" class="nav-btn active">Inicio</button>
+        <button data-nav="friends" class="nav-btn">Amistades <span id="friend-badge" class="badge hidden"></span></button>
+        <button data-nav="magazines" class="nav-btn">Revistas</button>
+      </nav>
+      <div class="topbar-right">
+        <span id="me-name"></span>
+        <button id="logout-btn" class="btn ghost">Salir</button>
+      </div>
+    </header>
+
+    <main>
+      <!-- Muro -->
+      <section id="view-feed" class="view">
+        <div class="composer card">
+          <div class="composer-tabs">
+            <button data-ctype="message" class="ctab active">✏️ Mensaje</button>
+            <button data-ctype="photo" class="ctab">📷 Foto</button>
+            <button data-ctype="reference" class="ctab">⭐ Referencia</button>
+          </div>
+
+          <form id="post-form">
+            <div id="photo-fields" class="hidden">
+              <input type="file" id="post-photo" accept="image/jpeg,image/png" />
+            </div>
+            <div id="reference-fields" class="hidden">
+              <div class="ref-row">
+                <select id="ref-kind">
+                  <option value="libro">📖 Libro</option>
+                  <option value="pelicula">🎬 Película o serie</option>
+                  <option value="musica">🎵 Música</option>
+                  <option value="lugar">📍 Lugar</option>
+                  <option value="otro">💡 Otra cosa</option>
+                </select>
+                <input id="ref-title" placeholder="Título (p. ej. «Cien años de soledad»)" />
+              </div>
+              <input id="ref-detail" placeholder="Autor, artista, dirección… (opcional)" />
+            </div>
+            <textarea id="post-text" rows="3" placeholder="¿Qué quieres contar a tus amigos?"></textarea>
+            <div class="composer-footer">
+              <span class="hint">Recuerda: aquí no se comparten enlaces 🙂</span>
+              <button type="submit" class="btn primary">Publicar</button>
+            </div>
+          </form>
+          <p id="post-error" class="error hidden"></p>
+        </div>
+
+        <div id="feed-list"></div>
+        <p id="feed-empty" class="empty hidden">Todavía no hay nada por aquí. Publica algo o añade amistades.</p>
+      </section>
+
+      <!-- Amistades -->
+      <section id="view-friends" class="view hidden">
+        <div class="card">
+          <h2>Añadir amistad</h2>
+          <form id="friend-form" class="inline-form">
+            <input id="friend-username" placeholder="Nombre de usuario de tu amigo/a" required />
+            <button type="submit" class="btn primary">Enviar solicitud</button>
+          </form>
+          <p id="friend-error" class="error hidden"></p>
+        </div>
+        <div class="card">
+          <h2>Solicitudes recibidas</h2>
+          <ul id="incoming-list" class="people-list"></ul>
+          <p id="incoming-empty" class="empty hidden">Nadie te ha invitado todavía.</p>
+        </div>
+        <div class="card">
+          <h2>Tus amistades</h2>
+          <ul id="friends-list" class="people-list"></ul>
+          <p id="friends-empty" class="empty hidden">Aún no tienes amistades en Vínculo.</p>
+        </div>
+        <div class="card">
+          <h2>Solicitudes enviadas</h2>
+          <ul id="outgoing-list" class="people-list"></ul>
+          <p id="outgoing-empty" class="empty hidden">Ninguna pendiente.</p>
+        </div>
+      </section>
+
+      <!-- Revistas -->
+      <section id="view-magazines" class="view hidden">
+        <div class="card">
+          <h2>Tu revista mensual 🗞️</h2>
+          <p class="muted">
+            Cada mes, Vínculo recopila automáticamente las fotos, mensajes y referencias
+            de tu círculo en una revista PDF lista para imprimir. También puedes generar
+            la del mes en curso cuando quieras.
+          </p>
+          <button id="generate-magazine" class="btn primary">Generar la revista de este mes</button>
+          <p id="magazine-error" class="error hidden"></p>
+        </div>
+        <div id="magazine-list"></div>
+        <p id="magazines-empty" class="empty hidden">Aún no hay revistas. Se generan solas al acabar cada mes.</p>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
