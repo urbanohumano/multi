@@ -11,6 +11,7 @@
 settings = {
   title: "360 Democracy",
   default_locale: "en",
+  force_https: true,                 # HTTPS is terminated by Discourse or by the host web server
   login_required: true,              # private community, like Circle
   invite_only: true,                 # members join through invitation links
   enable_local_logins: true,

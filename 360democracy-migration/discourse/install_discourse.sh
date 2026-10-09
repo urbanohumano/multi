@@ -1,79 +1,340 @@
 #!/usr/bin/env bash
-# Non-interactive Discourse install for the 360 Democracy VPS (Ubuntu 22.04/24.04 or Debian 12, as root).
+# Non-interactive Discourse install for the 360 Democracy VPS
+# (Ubuntu 22.04/24.04 or Debian 12, run as root).
 #
-# Usage:
-#   export DISCOURSE_HOSTNAME=community.example.org ADMIN_EMAILS=admin@example.org \
-#          SMTP_HOST=smtp-relay.brevo.com SMTP_PORT=587 SMTP_USER=login SMTP_PASSWORD=key \
-#          NOTIFICATION_EMAIL=noreply@community.example.org LETSENCRYPT_EMAIL=admin@example.org
+# Two modes, picked automatically (INSTALL_MODE=auto):
+#   standalone  ports 80/443 are free: Discourse's own nginx serves HTTPS with Let's Encrypt.
+#   socketed    ports 80/443 already serve other sites (for example the Demsoc website):
+#               Discourse listens on a unix socket and the existing nginx or Apache proxies
+#               the community subdomain to it; certbot issues its certificate. Existing sites
+#               are not modified: one new vhost file is added, and the web server is reloaded
+#               only if its configuration test passes.
+#
+# Usage, as root:
+#   export DISCOURSE_HOSTNAME=community.example.org ADMIN_EMAILS=admin@example.org
+#   export SMTP_HOST=smtp-relay.brevo.com SMTP_PORT=587 SMTP_USER=login SMTP_PASSWORD=key   # optional for now
 #   bash install_discourse.sh
 #
-# The DNS A/AAAA record for DISCOURSE_HOSTNAME must already point at this server, and the
-# SMTP domain must be verified (DKIM, SPF) at the email provider before the first invitation.
-# NOT YET RUN ON A REAL SERVER: tested only for shell syntax.
+# Other variables: INSTALL_MODE (auto|standalone|socketed), WEB_SERVER (nginx|apache|other),
+# NOTIFICATION_EMAIL, LETSENCRYPT_EMAIL, DISCOURSE_DIR (/var/discourse), FORCE=1 (skip the
+# disk check), DRY_RUN=1 (only render app.yml and the vhost into RENDER_DIR, change nothing).
 
 set -euo pipefail
 
-: "${DISCOURSE_HOSTNAME:?set DISCOURSE_HOSTNAME}"
+: "${DISCOURSE_HOSTNAME:?set DISCOURSE_HOSTNAME, e.g. community.example.org}"
 : "${ADMIN_EMAILS:?set ADMIN_EMAILS (comma separated)}"
 : "${SMTP_PORT:=587}"
-if [[ -z "${SMTP_HOST:-}" ]]; then
-  # No email provider yet: install with placeholders, create the admin with `rake admin:create`
-  # and fill the SMTP values in containers/app.yml later (then ./launcher rebuild app).
-  echo "SMTP_HOST not set: installing with placeholder SMTP; no email will be sent until app.yml is updated." >&2
-  SMTP_HOST=smtp.example.invalid; SMTP_USER=placeholder; SMTP_PASSWORD=placeholder
+: "${NOTIFICATION_EMAIL:=noreply@${DISCOURSE_HOSTNAME}}"
+: "${LETSENCRYPT_EMAIL:=${ADMIN_EMAILS%%,*}}"
+: "${INSTALL_MODE:=auto}"
+: "${DISCOURSE_DIR:=/var/discourse}"
+: "${DRY_RUN:=0}"
+: "${FORCE:=0}"
+: "${RENDER_DIR:=./render}"
+
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+host=$DISCOURSE_HOSTNAME
+socket="${DISCOURSE_DIR}/shared/standalone/nginx.http.sock"
+
+log() { printf '\n==> %s\n' "$*"; }
+die() { printf 'ERROR: %s\n' "$*" >&2; exit 1; }
+
+[[ $host =~ ^[a-z0-9]([a-z0-9.-]*[a-z0-9])?\.[a-z]{2,}$ ]] || die "DISCOURSE_HOSTNAME '$host' is not a valid lowercase hostname"
+
+if [[ -z ${SMTP_HOST:-} ]]; then
+  echo "SMTP_HOST not set: installing with a placeholder relay. No email is sent until containers/app.yml" \
+       "gets real values and './launcher rebuild app' runs. Create the first admin with 'rake admin:create'." >&2
+  SMTP_HOST=smtp.example.invalid SMTP_USER=placeholder SMTP_PASSWORD=placeholder
 fi
 : "${SMTP_USER:?set SMTP_USER}"
 : "${SMTP_PASSWORD:?set SMTP_PASSWORD}"
-: "${NOTIFICATION_EMAIL:=noreply@${DISCOURSE_HOSTNAME}}"
-: "${LETSENCRYPT_EMAIL:=${ADMIN_EMAILS%%,*}}"
 
-here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-target=/var/discourse
+port_listening() {
+  local hex; hex=$(printf ':%04X' "$1")
+  awk -v p="$hex" 'FNR > 1 && $4 == "0A" && substr($2, length($2) - 4) == p { f = 1 } END { exit !f }' \
+    /proc/net/tcp /proc/net/tcp6 2>/dev/null
+}
+service_active() { command -v systemctl >/dev/null && systemctl is-active --quiet "$1" 2>/dev/null; }
+yaml_str() { local s=${1//\\/\\\\}; s=${s//\"/\\\"}; printf '"%s"' "$s"; }
 
-mem_mb=$(awk '/MemTotal/ {print int($2/1024)}' /proc/meminfo)
+if [[ $INSTALL_MODE == auto ]]; then
+  if port_listening 80 || port_listening 443; then INSTALL_MODE=socketed; else INSTALL_MODE=standalone; fi
+fi
+[[ $INSTALL_MODE == standalone || $INSTALL_MODE == socketed ]] || die "INSTALL_MODE must be auto, standalone or socketed"
+
+if [[ -z ${WEB_SERVER:-} ]]; then
+  if command -v nginx >/dev/null && { service_active nginx || [[ -d /etc/nginx/sites-enabled ]]; }; then WEB_SERVER=nginx
+  elif command -v apache2ctl >/dev/null; then WEB_SERVER=apache
+  else WEB_SERVER=other; fi
+fi
+
+mem_mb=$(awk '/^MemTotal/ { print int($2 / 1024) }' /proc/meminfo)
 cpus=$(nproc)
-if (( mem_mb < 3500 )); then
-  echo "This server has ${mem_mb} MB of RAM; Discourse recommends 4 GB or more." >&2
+if [[ $INSTALL_MODE == socketed ]]; then
+  # The server is shared with other sites: leave them memory.
+  shared_buffers_mb=$(( mem_mb / 8 )); workers=2
+else
+  shared_buffers_mb=$(( mem_mb / 4 )); workers=$(( cpus < 2 ? 2 : (cpus > 4 ? 4 : cpus) ))
 fi
-shared_buffers="$(( mem_mb / 4 ))MB"
-workers=$(( cpus < 2 ? 2 : cpus ))
+(( shared_buffers_mb < 256 )) && shared_buffers_mb=256
 
-if ! command -v git >/dev/null; then
-  apt-get update && apt-get install -y git
+render_app_yml() {
+  local smtp_tls
+  if [[ $SMTP_PORT == 465 ]]; then
+    smtp_tls="  DISCOURSE_SMTP_FORCE_TLS: true
+  DISCOURSE_SMTP_ENABLE_START_TLS: false"
+  else
+    smtp_tls="  DISCOURSE_SMTP_ENABLE_START_TLS: true"
+  fi
+  cat <<YAML
+# Generated by install_discourse.sh for ${host} (mode: ${INSTALL_MODE}). Edit, then ./launcher rebuild app
+templates:
+  - "templates/postgres.template.yml"
+  - "templates/redis.template.yml"
+  - "templates/web.template.yml"
+  - "templates/web.ratelimited.template.yml"
+YAML
+  if [[ $INSTALL_MODE == standalone ]]; then
+    cat <<'YAML'
+  - "templates/web.ssl.template.yml"
+  - "templates/web.letsencrypt.ssl.template.yml"
+
+expose:
+  - "80:80"
+  - "443:443"
+YAML
+  else
+    cat <<'YAML'
+  # The host web server terminates HTTPS and proxies to /var/discourse/shared/standalone/nginx.http.sock
+  - "templates/web.socketed.template.yml"
+YAML
+  fi
+  cat <<YAML
+
+params:
+  db_default_text_search_config: "pg_catalog.english"
+  db_shared_buffers: "${shared_buffers_mb}MB"
+
+env:
+  LC_ALL: en_US.UTF-8
+  LANG: en_US.UTF-8
+  LANGUAGE: en_US.UTF-8
+  UNICORN_WORKERS: ${workers}
+  DISCOURSE_HOSTNAME: $(yaml_str "$host")
+  DISCOURSE_DEVELOPER_EMAILS: $(yaml_str "$ADMIN_EMAILS")
+  DISCOURSE_SMTP_ADDRESS: $(yaml_str "$SMTP_HOST")
+  DISCOURSE_SMTP_PORT: ${SMTP_PORT}
+  DISCOURSE_SMTP_USER_NAME: $(yaml_str "$SMTP_USER")
+  DISCOURSE_SMTP_PASSWORD: $(yaml_str "$SMTP_PASSWORD")
+${smtp_tls}
+  DISCOURSE_SMTP_DOMAIN: $(yaml_str "$host")
+  DISCOURSE_NOTIFICATION_EMAIL: $(yaml_str "$NOTIFICATION_EMAIL")
+YAML
+  if [[ $INSTALL_MODE == standalone ]]; then
+    printf '  LETSENCRYPT_ACCOUNT_EMAIL: %s\n' "$(yaml_str "$LETSENCRYPT_EMAIL")"
+  fi
+  cat <<YAML
+
+volumes:
+  - volume:
+      host: ${DISCOURSE_DIR}/shared/standalone
+      guest: /shared
+  - volume:
+      host: ${DISCOURSE_DIR}/shared/standalone/log/var-log
+      guest: /var/log
+
+# Chat, events (calendar), reactions and subscriptions ship with Discourse core.
+hooks:
+  after_code:
+    - exec:
+        cd: \$home/plugins
+        cmd:
+          - git clone https://github.com/discourse/docker_manager.git
+
+run:
+  - exec: echo "Beginning of custom commands"
+YAML
+}
+
+render_nginx_vhost() {
+  local v6=""
+  # Listen on IPv6 only if the existing nginx already does, so the new vhost matches the server.
+  if command -v nginx >/dev/null; then
+    nginx -T 2>/dev/null | grep -E '^[[:space:]]*listen[[:space:]]+\[::\]' >/dev/null && v6=$'\n    listen [::]:80;'
+  elif [[ -s /proc/net/if_inet6 ]]; then
+    v6=$'\n    listen [::]:80;'
+  fi
+  cat <<NGINX
+# Discourse (${host}) behind the host nginx, added by install_discourse.sh.
+# Remove this file and reload nginx to detach the community without touching other sites.
+server {
+    listen 80;${v6}
+    server_name ${host};
+    client_max_body_size 20m;
+
+    location / {
+        proxy_pass http://unix:${socket}:;
+        proxy_http_version 1.1;
+        proxy_set_header Host \$http_host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection \$http_connection;
+        proxy_read_timeout 120s;
+    }
+}
+NGINX
+}
+
+render_apache_vhost() {
+  cat <<APACHE
+# Discourse (${host}) behind the host Apache, added by install_discourse.sh.
+# Needs: a2enmod proxy proxy_http headers. Disable with a2dissite to detach the community.
+<VirtualHost *:80>
+    ServerName ${host}
+    ProxyPreserveHost On
+    ProxyRequests Off
+    RequestHeader set X-Forwarded-Proto expr=%{REQUEST_SCHEME}
+    LimitRequestBody 20971520
+    ProxyPass / "unix:${socket}|http://127.0.0.1/"
+    ProxyPassReverse / http://127.0.0.1/
+</VirtualHost>
+APACHE
+}
+
+if [[ $DRY_RUN == 1 ]]; then
+  mkdir -p "$RENDER_DIR"
+  render_app_yml > "$RENDER_DIR/app.yml"
+  if [[ $INSTALL_MODE == socketed ]]; then
+    render_nginx_vhost > "$RENDER_DIR/nginx-discourse.conf"
+    render_apache_vhost > "$RENDER_DIR/apache-discourse.conf"
+  fi
+  echo "mode=${INSTALL_MODE} web=${WEB_SERVER} workers=${workers} shared_buffers=${shared_buffers_mb}MB -> ${RENDER_DIR}"
+  exit 0
 fi
-if [[ ! -d "$target" ]]; then
-  git clone https://github.com/discourse/discourse_docker.git "$target"
+
+[[ $EUID -eq 0 ]] || die "run as root (sudo -i)"
+
+log "Mode ${INSTALL_MODE}, web server ${WEB_SERVER}, ${cpus} CPU, ${mem_mb} MB RAM"
+if [[ $INSTALL_MODE == socketed && $WEB_SERVER == other ]]; then
+  die "ports 80/443 are in use but no nginx or Apache was found; set up the reverse proxy by hand (see README) and rerun with WEB_SERVER=nginx or apache"
 fi
-mkdir -p "$target/containers" && chmod 700 "$target/containers"
 
-sed -e "s|__HOSTNAME__|${DISCOURSE_HOSTNAME}|g" \
-    -e "s|__ADMIN_EMAILS__|${ADMIN_EMAILS}|g" \
-    -e "s|__SMTP_HOST__|${SMTP_HOST}|g" \
-    -e "s|__SMTP_PORT__|${SMTP_PORT}|g" \
-    -e "s|__SMTP_USER__|${SMTP_USER}|g" \
-    -e "s|__SMTP_PASSWORD__|${SMTP_PASSWORD}|g" \
-    -e "s|__NOTIFICATION_EMAIL__|${NOTIFICATION_EMAIL}|g" \
-    -e "s|__LETSENCRYPT_EMAIL__|${LETSENCRYPT_EMAIL}|g" \
-    -e "s|__DB_SHARED_BUFFERS__|${shared_buffers}|g" \
-    -e "s|__UNICORN_WORKERS__|${workers}|g" \
-    "$here/app.yml.example" > "$target/containers/app.yml"
-chmod 600 "$target/containers/app.yml"
+free_gb=$(df -P -BG /var | awk 'NR == 2 { gsub("G", "", $4); print $4 }')
+if (( free_gb < 12 )) && [[ $FORCE != 1 ]]; then
+  die "only ${free_gb} GB free on /var: enlarge the volume first (or FORCE=1)"
+elif (( free_gb < 20 )); then
+  echo "WARNING: ${free_gb} GB free. Enough to start; enlarge the volume before importing and keeping backups." >&2
+fi
 
-mkdir -p "$target/shared/standalone/import"
-cp "$here/site_settings.rb" "$target/shared/standalone/import/site_settings.rb"
-cp "$here/circle.rb" "$target/shared/standalone/import/circle.rb"
+if [[ $(awk '/^SwapTotal/ { print $2 }' /proc/meminfo) -eq 0 ]] && (( mem_mb < 8000 )); then
+  log "Adding a 2 GB swapfile"
+  fallocate -l 2G /swapfile 2>/dev/null || dd if=/dev/zero of=/swapfile bs=1M count=2048 status=none
+  chmod 600 /swapfile && mkswap /swapfile >/dev/null && swapon /swapfile
+  grep -q '^/swapfile ' /etc/fstab || echo '/swapfile none swap sw 0 0' >> /etc/fstab
+  echo 'vm.swappiness = 10' > /etc/sysctl.d/99-discourse-swap.conf && sysctl -q -p /etc/sysctl.d/99-discourse-swap.conf
+fi
 
-cd "$target"
+command -v git >/dev/null || { apt-get update -q && apt-get install -y -q git; }
+if ! command -v docker >/dev/null; then
+  log "Installing Docker"
+  curl -fsSL https://get.docker.com | sh
+fi
+
+if [[ ! -d $DISCOURSE_DIR ]]; then
+  git clone https://github.com/discourse/discourse_docker.git "$DISCOURSE_DIR"
+fi
+install -d -m 700 "$DISCOURSE_DIR/containers"
+if [[ -f $DISCOURSE_DIR/containers/app.yml ]]; then
+  cp "$DISCOURSE_DIR/containers/app.yml" "$DISCOURSE_DIR/containers/app.yml.bak.$(date +%Y%m%d%H%M%S)"
+fi
+render_app_yml > "$DISCOURSE_DIR/containers/app.yml"
+chmod 600 "$DISCOURSE_DIR/containers/app.yml"
+
+install -d "$DISCOURSE_DIR/shared/standalone/import"
+cp "$here/site_settings.rb" "$here/circle.rb" "$DISCOURSE_DIR/shared/standalone/import/"
+
+log "Building the Discourse image (10 to 20 minutes; other sites on this server may slow down meanwhile)"
+cd "$DISCOURSE_DIR"
 ./launcher bootstrap app
 ./launcher start app
 
+attach_nginx() {
+  local avail link
+  if grep -rqsE "server_name[^;]*[[:space:]]${host//./\\.}[[:space:];]" /etc/nginx/; then
+    echo "nginx already has a server block for ${host}; leaving it as is." >&2; return 0
+  fi
+  if [[ -d /etc/nginx/sites-available && -d /etc/nginx/sites-enabled ]]; then
+    avail=/etc/nginx/sites-available/discourse-${host}.conf link=/etc/nginx/sites-enabled/discourse-${host}.conf
+  else
+    avail=/etc/nginx/conf.d/discourse-${host}.conf link=""
+  fi
+  render_nginx_vhost > "$avail"
+  [[ -n $link ]] && ln -sf "$avail" "$link"
+  if nginx -t 2>/dev/null; then
+    systemctl reload nginx
+  else
+    rm -f "$avail" ${link:+"$link"}
+    nginx -t || true
+    die "nginx rejected the new vhost; it was removed and nothing else changed"
+  fi
+}
+
+attach_apache() {
+  local conf=/etc/apache2/sites-available/discourse-${host}.conf
+  a2enmod -q proxy proxy_http headers >/dev/null
+  render_apache_vhost > "$conf"
+  a2ensite -q "discourse-${host}" >/dev/null
+  if apache2ctl configtest 2>/dev/null; then
+    systemctl reload apache2
+  else
+    a2dissite -q "discourse-${host}" >/dev/null; rm -f "$conf"
+    apache2ctl configtest || true
+    die "Apache rejected the new vhost; it was removed and nothing else changed"
+  fi
+}
+
+dns_points_here() {
+  local ip
+  for ip in $(getent ahosts "$host" | awk '{ print $1 }' | sort -u); do
+    hostname -I | tr ' ' '\n' | grep -x "$ip" >/dev/null && return 0
+  done
+  return 1
+}
+
+if [[ $INSTALL_MODE == socketed ]]; then
+  log "Attaching ${host} to the existing ${WEB_SERVER}"
+  if [[ $WEB_SERVER == nginx ]]; then attach_nginx; else attach_apache; fi
+  log "Waiting for Discourse to answer through ${WEB_SERVER}"
+  status=000
+  for _ in $(seq 1 60); do
+    status=$(curl -s -o /dev/null -w '%{http_code}' --noproxy '*' -H "Host: ${host}" http://127.0.0.1/srv/status || true)
+    [[ $status == 200 ]] && break
+    sleep 5
+  done
+  if [[ $status == 200 ]]; then
+    echo "OK: ${WEB_SERVER} reaches Discourse through ${socket}"
+  else
+    echo "WARNING: ${WEB_SERVER} got HTTP ${status} from Discourse. Check that the socket exists and that the" >&2
+    echo "  web server user can reach it:  namei -l ${socket}   and   ./launcher logs app" >&2
+  fi
+  if dns_points_here; then
+    command -v certbot >/dev/null || { apt-get update -q && apt-get install -y -q certbot "python3-certbot-${WEB_SERVER}"; }
+    certbot "--${WEB_SERVER}" -d "$host" --non-interactive --agree-tos -m "$LETSENCRYPT_EMAIL" --redirect
+  else
+    echo "WARNING: ${host} does not point at this server yet. When it does, run:" >&2
+    echo "  certbot --${WEB_SERVER} -d ${host} --redirect" >&2
+  fi
+fi
+
 cat <<MSG
 
-Discourse is starting at https://${DISCOURSE_HOSTNAME}
+Discourse is running for https://${host} (mode ${INSTALL_MODE}).
 Next:
-  1. Create the first admin without email: ./launcher enter app && rake admin:create
-     (or open the site and register with one of: ${ADMIN_EMAILS}, once SMTP works)
-  2. Apply settings: ./launcher enter app && cd /var/www/discourse && \\
-       su discourse -c 'bundle exec rails runner /shared/import/site_settings.rb'
-  3. Send a test email from Admin > Email and check it lands in Gmail, Outlook and Proton inboxes.
+  1. First admin, without email:  cd ${DISCOURSE_DIR} && ./launcher enter app  then  rake admin:create
+  2. Community settings:          su discourse -c 'bundle exec rails runner /shared/import/site_settings.rb'
+     (inside the container, from /var/www/discourse)
+  3. Once the email provider is ready: fill the SMTP lines in ${DISCOURSE_DIR}/containers/app.yml,
+     run ./launcher rebuild app, and send a test from Admin > Email to Gmail, Outlook and Proton.
 MSG
