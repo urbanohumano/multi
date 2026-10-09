@@ -50,9 +50,9 @@ fi
 : "${SMTP_PASSWORD:?set SMTP_PASSWORD}"
 
 port_listening() {
-  local hex; hex=$(printf ':%04X' "$1")
-  awk -v p="$hex" 'FNR > 1 && $4 == "0A" && substr($2, length($2) - 4) == p { f = 1 } END { exit !f }' \
-    /proc/net/tcp /proc/net/tcp6 2>/dev/null
+  local hex f files=(); hex=$(printf ':%04X' "$1")
+  for f in /proc/net/tcp /proc/net/tcp6; do [[ -r $f ]] && files+=("$f"); done   # tcp6 is absent without IPv6
+  awk -v p="$hex" 'FNR > 1 && $4 == "0A" && substr($2, length($2) - 4) == p { f = 1 } END { exit !f }' "${files[@]}"
 }
 service_active() { command -v systemctl >/dev/null && systemctl is-active --quiet "$1" 2>/dev/null; }
 yaml_str() { local s=${1//\\/\\\\}; s=${s//\"/\\\"}; printf '"%s"' "$s"; }

@@ -17,9 +17,9 @@ info() { line INFO "$1"; }
 section() { printf '\n== %s ==\n' "$1"; }
 
 port_listening() {  # works without ss: reads /proc/net/tcp{,6}
-  local hex; hex=$(printf ':%04X' "$1")
-  awk -v p="$hex" 'FNR > 1 && $4 == "0A" && substr($2, length($2) - 4) == p { f = 1 } END { exit !f }' \
-    /proc/net/tcp /proc/net/tcp6 2>/dev/null
+  local hex f files=(); hex=$(printf ':%04X' "$1")
+  for f in /proc/net/tcp /proc/net/tcp6; do [[ -r $f ]] && files+=("$f"); done   # tcp6 is absent without IPv6
+  awk -v p="$hex" 'FNR > 1 && $4 == "0A" && substr($2, length($2) - 4) == p { f = 1 } END { exit !f }' "${files[@]}"
 }
 port_owner() {
   command -v ss >/dev/null || return 0
