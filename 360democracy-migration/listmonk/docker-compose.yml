@@ -1,0 +1,38 @@
+# listmonk: self-hosted newsletters/broadcasts next to Discourse (optional, for the
+# Scaleway TEM path; Brevo already includes campaigns). Sends through the same SMTP relay.
+# First run: docker compose run --rm app ./listmonk --install   then   docker compose up -d
+# Then open http://127.0.0.1:9000 (put it behind the Discourse nginx or an SSH tunnel).
+
+services:
+  app:
+    image: listmonk/listmonk:latest
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:9000:9000"
+    environment:
+      LISTMONK_app__address: 0.0.0.0:9000
+      LISTMONK_db__host: db
+      LISTMONK_db__port: 5432
+      LISTMONK_db__user: listmonk
+      LISTMONK_db__password: ${LISTMONK_DB_PASSWORD:?set LISTMONK_DB_PASSWORD}
+      LISTMONK_db__database: listmonk
+      LISTMONK_db__ssl_mode: disable
+      TZ: Europe/Brussels
+    depends_on:
+      - db
+    volumes:
+      - listmonk-uploads:/listmonk/uploads
+
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: listmonk
+      POSTGRES_PASSWORD: ${LISTMONK_DB_PASSWORD:?set LISTMONK_DB_PASSWORD}
+      POSTGRES_DB: listmonk
+    volumes:
+      - listmonk-data:/var/lib/postgresql/data
+
+volumes:
+  listmonk-data:
+  listmonk-uploads:

@@ -1,0 +1,7 @@
+ID,Email,Name,Joined At,Tags
+101,domenico@example.org,Domenico Di Siena,2024-03-01T10:00:00Z,"admin, demsoc"
+102,rieke@example.org,Rieke Wönig,2025-01-15T09:30:00Z,nets4dem
+103,ana@example.org,Ana María López-Ruiz,2025-02-20T08:00:00Z,
+104,li@example.org,Li,2025-05-02T14:00:00Z,nets4dem
+105,RIEKE@example.org,Rieke Woenig (duplicate),2025-06-01T12:00:00Z,
+106,j.o@example.org,,2025-07-07,

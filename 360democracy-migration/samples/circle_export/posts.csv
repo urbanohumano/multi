@@ -1,0 +1,6 @@
+ID,Space ID,User ID,Title,Body,Created At
+1001,2,102,Working Session 2 recap,"<p>Thanks to everyone who joined.</p><p>Next steps:</p><ul><li>Review the <strong>Clause Bank</strong></li><li>Send feedback by <em>Friday</em></li></ul><p>Slides: <a href=""https://example.org/slides"">here</a></p>",2026-07-10T10:15:00Z
+1002,1,101,,"{""type"":""doc"",""content"":[{""type"":""heading"",""attrs"":{""level"":2},""content"":[{""type"":""text"",""text"":""Schedule update""}]},{""type"":""paragraph"",""content"":[{""type"":""text"",""text"":""Reflection Circle 3 moves to ""},{""type"":""text"",""marks"":[{""type"":""bold""}],""text"":""10 November""},{""type"":""text"",""text"":"".""}]},{""type"":""bulletList"",""content"":[{""type"":""listItem"",""content"":[{""type"":""paragraph"",""content"":[{""type"":""text"",""text"":""17:00 CET""}]}]}]}]}",2026-07-07T13:05:00Z
+1003,3,106,Reading list,"Plain text post.
+Second line.",2026-06-03T15:00:00Z
+1004,99,,Orphan space post,<p>This space no longer exists.</p>,2026-05-01T09:00:00Z
