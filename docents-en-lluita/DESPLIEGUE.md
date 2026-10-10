@@ -41,8 +41,8 @@ Se compra en hPanel → Dominios (unos 10–15 € al año para un `.org`).
 Comprueba allí si está libre; si no, prueba `docentsenlluita.cat` o `docentsenlluita.com`.
 
 Alternativa gratis e inmediata: un subdominio de un dominio que ya tengas
-verificado en Resend (p. ej. `moscosos.civiba.com` y remitente
-`moscosos@civiba.com`). Funciona, pero mezcla la protesta con ese proyecto.
+verificado en Resend (p. ej. `moscosos.otrodominio.com` y remitente
+`moscosos@otrodominio.com`). Funciona, pero mezcla la protesta con ese proyecto.
 
 **Registro DNS de la web.** En hPanel → Dominios → tu dominio → **DNS / Nameservers**
 → Añadir registro:
