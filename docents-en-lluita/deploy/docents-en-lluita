@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+# Atajos para administrar Docents en Lluita en el servidor.
+# Lo instala deploy/instalar.sh en /usr/local/bin/docents-en-lluita.
+set -euo pipefail
+
+APP=docents-en-lluita
+APP_DIR=/opt/$APP
+ENV_FILE=/etc/$APP/env
+
+[ "$(id -u)" -eq 0 ] || exec sudo "$0" "$@"
+
+ayuda() {
+  cat <<'TXT'
+Uso: docents-en-lluita <orden>
+
+  estado                    ¿Está funcionando? (servicio, web y correo)
+  logs                      Registros en directo (Ctrl+C para salir)
+  reiniciar                 Reinicia la aplicación
+  configurar                Edita la configuración y reinicia
+  probar-correo <correo>    Envía un correo de prueba por Resend
+  copia                     Hace ahora una copia de seguridad de la base de datos
+  actualizar                Descarga la última versión (git pull) y la instala
+TXT
+}
+
+case "${1:-ayuda}" in
+  estado)
+    systemctl --no-pager --lines=5 status "$APP" || true
+    echo
+    curl -fsS "http://127.0.0.1:$(sed -n 's/^PORT=//p' "$ENV_FILE")/api/salud" && echo || echo "La web no responde."
+    systemctl list-timers "$APP-copia.timer" --no-pager | sed -n '1,2p'
+    ;;
+  logs)
+    journalctl -u "$APP" -f -n 100
+    ;;
+  reiniciar)
+    systemctl restart "$APP" && echo "Reiniciado."
+    ;;
+  configurar)
+    "${EDITOR:-nano}" "$ENV_FILE"
+    systemctl restart "$APP" && echo "Configuración aplicada."
+    ;;
+  probar-correo)
+    [ -n "${2:-}" ] || { ayuda; exit 2; }
+    cd "$APP_DIR"
+    runuser -u docents -- "$(command -v node)" --env-file="$ENV_FILE" scripts/probar-correo.js "$2"
+    ;;
+  copia)
+    systemctl start "$APP-copia.service"
+    journalctl -u "$APP-copia.service" -n 1 --no-pager -o cat
+    ;;
+  actualizar)
+    ORIGEN=$(cat "/etc/$APP/origen")
+    git -C "$ORIGEN" pull --ff-only
+    bash "$ORIGEN/deploy/instalar.sh"
+    ;;
+  *)
+    ayuda
+    ;;
+esac

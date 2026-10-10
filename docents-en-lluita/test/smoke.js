@@ -16,8 +16,8 @@ const path = require('path');
 const assert = require('assert');
 
 process.env.NODE_ENV = 'test';
-process.env.DATA_DIR = fs.mkdtempSync(path.join(os.tmpdir(), 'docent-en-lluita-test-'));
-process.env.ADMIN_EMAILS = 'organitzacio@docentenlluita.org';
+process.env.DATA_DIR = fs.mkdtempSync(path.join(os.tmpdir(), 'docents-en-lluita-test-'));
+process.env.ADMIN_EMAILS = 'organitzacio@docentsenlluita.org';
 process.env.SMTP_HOST = '';
 process.env.WEEKDAYS = '3';
 process.env.WEEKS_AHEAD = '4';
@@ -176,7 +176,7 @@ async function main() {
   assert.strictEqual(r.status, 401);
   r = await ana('/api/admin/jornadas');
   assert.strictEqual(r.status, 403, 'Una docente no entra al panel');
-  const orgDocente = await login(org, 'organitzacio@docentenlluita.org');
+  const orgDocente = await login(org, 'organitzacio@docentsenlluita.org');
   assert.strictEqual(orgDocente.admin, true, 'La organización puede entrar aunque su correo no sea @edu.gva.es');
   r = await org('/api/admin/jornadas');
   assert.strictEqual(r.status, 200);

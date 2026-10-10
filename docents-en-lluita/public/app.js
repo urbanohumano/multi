@@ -1,6 +1,6 @@
 'use strict';
 
-/* Docent en Lluita — cliente ligero sin dependencias. */
+/* Docents en Lluita — cliente ligero sin dependencias. */
 
 const $ = (sel, root = document) => root.querySelector(sel);
 
@@ -753,7 +753,7 @@ async function renderAdminJornada(id) {
 function renderPrivacy() {
   const c = state.config;
   $('#privacy-text').innerHTML = `
-    <p><strong>Quién:</strong> la organización de Docent en Lluita${c.contacto ? ` (<a href="mailto:${escapeHtml(c.contacto)}">${escapeHtml(c.contacto)}</a>)` : ''}.</p>
+    <p><strong>Quién:</strong> la organización de Docents en Lluita${c.contacto ? ` (<a href="mailto:${escapeHtml(c.contacto)}">${escapeHtml(c.contacto)}</a>)` : ''}.</p>
     <p><strong>Para qué:</strong> gestionar las entradas de cada jornada, comprobar que quien reserva es docente y tiene el día de permiso, y enviar el punto de encuentro.</p>
     <p><strong>Qué datos:</strong> correo corporativo, nombre, centro y la autorización que subes. Solo la organización puede ver las autorizaciones; nadie más ve quién se ha inscrito.</p>
     <p><strong>Cuánto tiempo:</strong> las autorizaciones se borran ${c.diasConservacion} días después de cada jornada (o al liberar tu entrada).</p>

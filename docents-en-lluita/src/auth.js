@@ -81,7 +81,7 @@ async function requestCode(rawEmail, ip) {
     subject: `Tu código de acceso: ${code}`,
     text:
       `Hola,\n\n` +
-      `Tu código para entrar en la plataforma de moscosos de Docent en Lluita es:\n\n` +
+      `Tu código para entrar en la plataforma de moscosos de Docents en Lluita es:\n\n` +
       `    ${code}\n\n` +
       `Caduca en ${CODE_MINUTES} minutos. Si no lo has pedido tú, ignora este correo.\n\n` +
       `${config.publicUrl}\n`,

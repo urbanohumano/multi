@@ -9,7 +9,7 @@ const { db } = require('./src/db');
 const auth = require('./src/auth');
 const J = require('./src/jornadas');
 const { authorizationPath } = require('./src/archivos');
-const { devMode } = require('./src/mailer');
+const { devMode, mode: mailMode } = require('./src/mailer');
 
 const app = express();
 app.set('trust proxy', config.trustProxy);
@@ -67,6 +67,12 @@ app.get('/api/config', (req, res) => {
     horaAvisoDt: config.fallbackHour,
     modoDesarrollo: devMode,
   });
+});
+
+// Comprobación de que el servicio está vivo (la usa el instalador).
+app.get('/api/salud', (req, res) => {
+  db.prepare('SELECT 1').get();
+  res.json({ ok: true, correo: mailMode });
 });
 
 app.get('/api/jornadas', (req, res) => {
@@ -230,9 +236,9 @@ app.use((err, req, res, next) => {
 
 if (require.main === module) {
   J.startScheduler();
-  app.listen(config.port, () => {
-    console.log(`Docent en Lluita escuchando en ${config.publicUrl} (puerto ${config.port})`);
-    if (devMode) console.log('⚠️  Sin SMTP_HOST: los correos se guardan en data/outbox/ y se muestran aquí.');
+  app.listen(config.port, config.host, () => {
+    console.log(`Docents en Lluita escuchando en ${config.host}:${config.port} · ${config.publicUrl} · correo: ${mailMode}`);
+    if (devMode) console.log('⚠️  Sin RESEND_API_KEY ni SMTP_HOST: los correos se guardan en data/outbox/ y se muestran aquí.');
     if (!config.adminEmails.length) console.log('⚠️  ADMIN_EMAILS está vacío: nadie puede entrar al panel de organización.');
   });
 }

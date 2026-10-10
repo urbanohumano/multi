@@ -9,7 +9,7 @@ for (const dir of [config.dataDir, config.uploadsDir, config.outboxDir]) {
   fs.mkdirSync(dir, { recursive: true });
 }
 
-const db = new Database(path.join(config.dataDir, 'docent-en-lluita.db'));
+const db = new Database(path.join(config.dataDir, 'docents-en-lluita.db'));
 db.pragma('journal_mode = WAL');
 db.pragma('foreign_keys = ON');
 

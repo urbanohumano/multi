@@ -1,0 +1,18 @@
+# Sitio de Docents en Lluita para Caddy. deploy/instalar.sh lo copia a
+# /etc/caddy/sites/docents-en-lluita.caddy cambiando __DOMINIO__ por el dominio real.
+# Caddy pide y renueva solo el certificado HTTPS (Let's Encrypt).
+__DOMINIO__ {
+	encode zstd gzip
+
+	# La autorización más grande admitida es de 5 MB; dejamos margen para el formulario.
+	request_body {
+		max_size 8MB
+	}
+
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		-Server
+	}
+
+	reverse_proxy 127.0.0.1:__PUERTO__
+}

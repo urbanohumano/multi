@@ -47,6 +47,8 @@ const DATA_DIR = env.DATA_DIR || path.join(__dirname, '..', 'data');
 
 const config = {
   port: int(env.PORT, 3000),
+  // En el VPS escucha solo en 127.0.0.1: el tráfico entra por Caddy (HTTPS).
+  host: env.HOST || '0.0.0.0',
   publicUrl: (env.PUBLIC_URL || `http://localhost:${int(env.PORT, 3000)}`).replace(/\/$/, ''),
   dataDir: DATA_DIR,
   uploadsDir: path.join(DATA_DIR, 'autorizaciones'),
@@ -71,6 +73,13 @@ const config = {
   retentionDays: int(env.RETENTION_DAYS, 30),
   maxUploadBytes: int(env.MAX_UPLOAD_MB, 5) * 1024 * 1024,
 
+  // Resend por su API HTTPS (recomendado). Si no hay clave, se usa SMTP; si tampoco, modo de prueba.
+  resend: {
+    apiKey: env.RESEND_API_KEY || '',
+    apiUrl: (env.RESEND_API_URL || 'https://api.resend.com').replace(/\/$/, ''),
+    // La cuenta admite 10 peticiones por segundo, compartidas con otros proyectos: vamos con margen.
+    perSecond: int(env.RESEND_MAX_PER_SECOND, 4),
+  },
   smtp: {
     host: env.SMTP_HOST || '',
     port: int(env.SMTP_PORT, 587),
@@ -78,7 +87,9 @@ const config = {
     user: env.SMTP_USER || '',
     pass: env.SMTP_PASS || '',
   },
-  mailFrom: env.MAIL_FROM || 'Docent en Lluita <no-reply@localhost>',
+  mailFrom: env.MAIL_FROM || 'Docents en Lluita <no-reply@localhost>',
+  // Las respuestas a los correos llegan a la organización.
+  replyTo: env.REPLY_TO || env.CONTACT_EMAIL || '',
 
   // Detrás de un proxy inverso (nginx, Render, Railway…) pon TRUST_PROXY=1 para ver la IP real.
   trustProxy: env.TRUST_PROXY ? (Number.isFinite(Number(env.TRUST_PROXY)) ? Number(env.TRUST_PROXY) : env.TRUST_PROXY) : false,

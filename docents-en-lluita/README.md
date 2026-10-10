@@ -1,4 +1,4 @@
-# Docent en Lluita · Moscosos ✊
+# Docents en Lluita · Moscosos ✊
 
 Plataforma para que el profesorado organice sus **días de libre disposición
 (moscosos)** y los use para manifestarse juntos. Funciona como una taquilla de
@@ -37,15 +37,20 @@ disponibles se ven en directo.
 ## Ponerlo en marcha
 
 ```bash
-cd docent-en-lluita
+cd docents-en-lluita
 npm install
 ADMIN_EMAILS=tu-correo@edu.gva.es npm start   # http://localhost:3000
 ```
 
 Sin servidor de correo configurado, la plataforma arranca en **modo de prueba**:
 los correos (incluidos los códigos de acceso) se muestran en la consola y se
-guardan en `data/outbox/`. Para producción copia `.env.example` a `.env`,
-rellénalo y arranca con `npm run start:env`.
+guardan en `data/outbox/`. Para probar en local con correo de verdad copia
+`.env.example` a `.env`, rellénalo y arranca con `npm run start:env`.
+
+### Instalar en el servidor
+
+Guía paso a paso para un **VPS de Hostinger con correo por Resend** (dominio,
+DNS, API key e instalación con un solo script): [DESPLIEGUE.md](DESPLIEGUE.md).
 
 ### Probar
 
@@ -57,7 +62,8 @@ La prueba de extremo a extremo usa una carpeta de datos temporal y recorre el
 flujo completo: jornadas de los miércoles, acceso por código, reservas con
 autorización, entradas agotadas, panel de organización, anulación,
 convocatoria, aviso automático en la Direcció Territorial y borrado de
-autorizaciones.
+autorizaciones. Una segunda prueba comprueba el envío por Resend contra una API
+simulada (límite por segundo, reintentos sin duplicados y errores).
 
 ## Configuración
 
@@ -74,7 +80,12 @@ autorizaciones.
 | `RETENTION_DAYS` | `30` | Días que se conservan las autorizaciones tras la jornada |
 | `MAX_UPLOAD_MB` | `5` | Tamaño máximo de la autorización |
 | `DT_ALACANT`, `DT_CASTELLO`, `DT_VALENCIA` | ver `src/config.js` | Dirección de cada Direcció Territorial |
-| `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM` | — | Correo saliente |
+| `RESEND_API_KEY` | — | Clave de Resend: los correos salen por su API HTTPS |
+| `RESEND_MAX_PER_SECOND` | `4` | Envíos por segundo como máximo (la cuenta admite 10, compartidos) |
+| `MAIL_FROM` | — | Remitente, de un dominio verificado en Resend |
+| `REPLY_TO` | `CONTACT_EMAIL` | Adónde llegan las respuestas a los correos |
+| `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS` | — | Alternativa a Resend: cualquier servidor SMTP |
+| `HOST` | `0.0.0.0` | Interfaz en la que escucha (en el VPS, `127.0.0.1`: entra por Caddy) |
 | `TRUST_PROXY` | — | Pon `1` si va detrás de un proxy inverso |
 | `DATA_DIR` | `./data` | Base de datos SQLite, autorizaciones y bandeja de prueba |
 
@@ -85,10 +96,13 @@ jornada. Desde el panel también se puede escribir cualquier otro lugar.
 
 ### Correo: importante para que llegue
 
-Los correos van a buzones `@edu.gva.es`, que filtran el correo masivo. Usad un
-proveedor SMTP con dominio propio verificado (SPF y DKIM), por ejemplo Brevo o
-Resend, y un remitente reconocible. Probad primero con vuestros propios correos.
-Tened en cuenta también que esos buzones los gestiona la Conselleria.
+Los correos van a buzones `@edu.gva.es`, que filtran el correo masivo. La
+plataforma usa **Resend** (con `RESEND_API_KEY`) desde un dominio propio
+verificado (SPF, DKIM y, mejor, DMARC) y un remitente reconocible. Los envíos van
+en cola respetando el límite por segundo de la cuenta y se reintentan sin
+duplicarse. Probad primero con vuestros propios correos
+(`node scripts/probar-correo.js tu@correo`). Tened en cuenta también que esos
+buzones los gestiona la Conselleria.
 
 ## Panel de organización
 
@@ -114,15 +128,18 @@ Entrando con un correo de `ADMIN_EMAILS` aparece la pestaña **Organización**:
 | `src/auth.js` | Acceso por código al correo y sesión en cookie HttpOnly |
 | `src/jornadas.js` | Localidades, reservas, punto de encuentro, convocatoria y tareas programadas |
 | `src/archivos.js` | Validación y almacenamiento de las autorizaciones |
-| `src/mailer.js` | Envío por SMTP o bandeja local en modo de prueba |
+| `src/mailer.js` | Envío por Resend (API), SMTP o bandeja local en modo de prueba |
 | `src/dates.js` | Fechas en hora peninsular |
 | `public/` | Frontend en HTML/CSS/JS sin dependencias, pensado para el móvil |
-| `test/smoke.js` | Prueba de extremo a extremo |
+| `scripts/` | Correo de prueba y copia de seguridad de la base de datos |
+| `deploy/` | Instalador para el VPS, servicio systemd, Caddy y comando `docents-en-lluita` |
+| `test/smoke.js`, `test/resend.js` | Prueba de extremo a extremo y prueba del envío por Resend |
 
 ### API
 
 ```
 GET    /api/config
+GET    /api/salud                            (comprobación de que el servicio responde)
 GET    /api/jornadas                         (público: entradas libres y localidades ocupadas)
 POST   /api/acceso/codigo | /api/acceso/verificar | /api/acceso/salir
 GET    /api/yo

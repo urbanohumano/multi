@@ -200,7 +200,7 @@ function sendConfirmation(r, j) {
         `  la Direcció Territorial d'Educació.\n\n`) +
     `Si al final no puedes venir, libera tu entrada para que la aproveche otra persona:\n` +
     `${config.publicUrl}/#mis-entradas\n\n` +
-    `Docent en Lluita\n`;
+    `Docents en Lluita\n`;
   return sendMail({
     tipo: 'confirmacion',
     to: r.email,
@@ -386,7 +386,7 @@ async function notifyCancellation(j) {
         `Hola, ${r.nombre}:\n\n` +
         `La organización ha cancelado la jornada de moscosos del ${formatFecha(j.fecha)} en ` +
         `${provinciaNombre(j.provincia)}. Tu entrada nº ${r.localidad} queda sin efecto.\n\n` +
-        `Consulta las próximas jornadas en ${config.publicUrl}\n\nDocent en Lluita\n`,
+        `Consulta las próximas jornadas en ${config.publicUrl}\n\nDocents en Lluita\n`,
       jornadaId: j.id,
       reservaId: r.id,
     });
@@ -430,7 +430,7 @@ async function rechazarReserva(id, motivo) {
       `La organización ha revisado tu reserva para la jornada del ${formatFecha(j.fecha)} en ` +
       `${provinciaNombre(j.provincia)} y la ha anulado por este motivo:\n\n    ${motivo}\n\n` +
       `Si es un error (por ejemplo, subiste un documento equivocado), puedes volver a reservar ` +
-      `con la autorización correcta mientras queden entradas: ${config.publicUrl}\n\nDocent en Lluita\n`,
+      `con la autorización correcta mientras queden entradas: ${config.publicUrl}\n\nDocents en Lluita\n`,
     jornadaId: j.id,
     reservaId: r.id,
   });
@@ -504,7 +504,7 @@ async function enviarConvocatoria(id) {
             `Tu entrada: nº ${r.localidad} · código ${r.codigo}\n` +
             `Lleva contigo la autorización del día de permiso.\n\n` +
             `Si ya no puedes venir, libera tu entrada: ${config.publicUrl}/#mis-entradas\n\n` +
-            `Docent en Lluita\n`,
+            `Docents en Lluita\n`,
           jornadaId: j.id,
           reservaId: r.id,
         });

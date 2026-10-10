@@ -1,16 +1,19 @@
+/* Colores del logo de Docents en Lluita: verde bosque, lima y blanco. */
 :root {
-  --ink: #111813;
-  --muted: #5b6660;
-  --green: #1e9e45;
-  --green-dark: #157a34;
-  --green-soft: #e3f5e8;
+  --ink: #10261a;
+  --muted: #5a6a5f;
+  --forest: #1b4a2b;
+  --lime: #8cc63f;
+  --green: #237a3b;
+  --green-dark: #1a5e2d;
+  --green-soft: #e8f3df;
   --yellow: #f4c430;
   --red: #c0392b;
   --red-soft: #fbe7e4;
   --paper: #f5f6f2;
   --card: #ffffff;
   --border: #dde2dc;
-  --seat-taken: #2b3530;
+  --seat-taken: #24372b;
 }
 
 * { box-sizing: border-box; }
@@ -31,7 +34,7 @@ a { color: var(--green-dark); }
 
 /* ---------- Cabecera ---------- */
 .topbar {
-  background: var(--ink);
+  background: var(--forest);
   color: #fff;
   display: flex;
   flex-wrap: wrap;
@@ -45,21 +48,21 @@ a { color: var(--green-dark); }
 .brand { display: flex; align-items: center; gap: 0.6rem; color: #fff; text-decoration: none; }
 .logo {
   width: 40px; height: 40px; border-radius: 50%;
-  background: var(--green); color: var(--ink);
+  background: var(--lime); color: var(--forest);
   display: grid; place-items: center;
   font-weight: 900; letter-spacing: -0.04em;
-  border: 2px solid var(--yellow);
+  border: 2px solid #fff;
 }
 .brand-text { display: flex; flex-direction: column; line-height: 1.1; }
 .brand-text strong { text-transform: uppercase; letter-spacing: 0.04em; }
-.brand-text small { color: var(--yellow); font-size: 0.75rem; }
+.brand-text small { color: var(--lime); font-size: 0.75rem; }
 .topbar nav { display: flex; gap: 0.3rem; flex: 1; }
 .topbar nav a {
-  color: #cfd8d2; text-decoration: none; padding: 0.35rem 0.7rem; border-radius: 999px; font-size: 0.95rem;
+  color: #d5e6d9; text-decoration: none; padding: 0.35rem 0.7rem; border-radius: 999px; font-size: 0.95rem;
 }
 .topbar nav a.active, .topbar nav a:hover { background: rgba(255, 255, 255, 0.12); color: #fff; }
 .session { display: flex; align-items: center; gap: 0.6rem; font-size: 0.85rem; }
-.session .muted { color: #9fb0a6; }
+.session .muted { color: #a9c4b1; }
 
 .dev-banner {
   background: var(--yellow); color: var(--ink); text-align: center; padding: 0.45rem 1rem; font-size: 0.85rem;
@@ -87,7 +90,7 @@ main { max-width: 1080px; margin: 0 auto; padding: 1.2rem 1rem 3rem; }
 .btn.primary:hover { background: var(--green-dark); }
 .btn.ghost { background: transparent; color: inherit; }
 .topbar .btn { background: var(--green); color: #fff; border-color: var(--green); }
-.topbar .btn.ghost { background: transparent; border-color: #4a5650; }
+.topbar .btn.ghost { background: transparent; border-color: #4f7a5c; }
 .btn.small { padding: 0.35rem 0.7rem; font-size: 0.85rem; }
 .btn.danger { color: var(--red); }
 .btn.danger:hover { border-color: var(--red); }
@@ -142,26 +145,27 @@ form .btn { margin-top: 0.9rem; }
 
 /* ---------- Portada ---------- */
 .hero {
-  background: var(--ink);
+  background: var(--forest);
   color: #fff;
   border-radius: 18px;
   padding: 1.4rem 1.3rem;
   margin-bottom: 1.2rem;
 }
 .hero h1 { margin: 0 0 0.5rem; font-size: 1.55rem; line-height: 1.15; }
-.hero h1::after { content: ''; display: block; width: 64px; height: 5px; background: var(--green); margin-top: 0.6rem; }
+.hero h1::after { content: ''; display: block; width: 64px; height: 5px; background: var(--lime); margin-top: 0.6rem; }
 .hero p { color: #d7e0da; margin: 0.4rem 0 1rem; }
 .hero strong { color: #fff; }
 .steps { margin: 0; padding-left: 1.2rem; display: grid; gap: 0.5rem; color: #d7e0da; }
-.steps li::marker { color: var(--yellow); font-weight: 800; }
-.domain { font-family: ui-monospace, monospace; background: rgba(30, 158, 69, 0.18); padding: 0 0.3rem; border-radius: 4px; }
+.steps li::marker { color: var(--lime); font-weight: 800; }
+.eyebrow { margin: 0 0 0.4rem !important; color: var(--lime) !important; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.8rem; }
+.domain { font-family: ui-monospace, monospace; background: rgba(140, 198, 63, 0.22); padding: 0 0.3rem; border-radius: 4px; }
 
 .filters { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1rem; }
 .chip {
   border: 1px solid var(--border); background: #fff; border-radius: 999px; padding: 0.4rem 0.9rem;
   font: inherit; cursor: pointer;
 }
-.chip.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+.chip.active { background: var(--forest); color: #fff; border-color: var(--forest); }
 
 .date-group h3 { margin: 1.2rem 0 0.6rem; font-size: 1.05rem; }
 .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.8rem; }
@@ -181,7 +185,7 @@ form .btn { margin-top: 0.9rem; }
 .seat-counter { margin-bottom: 0.8rem; }
 .seat-counter strong { font-size: 1.6rem; color: var(--green-dark); }
 .stage {
-  background: var(--yellow); color: var(--ink); text-align: center; font-weight: 900; letter-spacing: 0.3em;
+  background: var(--lime); color: var(--forest); text-align: center; font-weight: 900; letter-spacing: 0.3em;
   border-radius: 6px 6px 40% 40% / 6px 6px 18px 18px; padding: 0.3rem; margin-bottom: 0.8rem; font-size: 0.8rem;
 }
 .seats { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; }
@@ -191,7 +195,7 @@ form .btn { margin-top: 0.9rem; }
 }
 .seat.free { background: var(--green-soft); color: var(--green-dark); border: 1px solid #b9e3c5; }
 .seat.taken { background: var(--seat-taken); color: #8a968f; }
-.seat.mine { background: var(--yellow); color: var(--ink); box-shadow: 0 0 0 2px var(--ink); }
+.seat.mine { background: var(--lime); color: var(--forest); box-shadow: 0 0 0 2px var(--forest); }
 .legend { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 0.8rem; font-size: 0.8rem; color: var(--muted); }
 .legend .seat { display: inline-block; width: 14px; height: 14px; vertical-align: middle; margin-right: 0.2rem; }
 
