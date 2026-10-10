@@ -1,0 +1,21 @@
+{
+  "name": "docent-en-lluita",
+  "version": "1.0.0",
+  "description": "Reserva de moscosos para manifestarse: 100 entradas gratuitas por jornada y provincia, acceso con correo @edu.gva.es, autorización firmada obligatoria y convocatoria por correo con el punto de encuentro.",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js",
+    "start:env": "node --env-file=.env server.js",
+    "test": "node test/smoke.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.10.0",
+    "express": "^4.21.2",
+    "multer": "^2.4.0",
+    "nodemailer": "^10.1.0"
+  }
+}

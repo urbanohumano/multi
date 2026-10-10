@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#111813" />
+  <title>Docent en Lluita · Moscosos</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%231e9e45' stroke='%23f4c430' stroke-width='4'/%3E%3Ctext x='32' y='42' font-family='Arial' font-weight='900' font-size='26' text-anchor='middle' fill='%23111813'%3EDL%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <a href="#jornadas" class="brand">
+      <span class="logo">DL</span>
+      <span class="brand-text"><strong>Docent en Lluita</strong><small>Moscosos en lluita · Curs 26/27</small></span>
+    </a>
+    <nav>
+      <a href="#jornadas" data-nav="jornadas">Jornadas</a>
+      <a href="#mis-entradas" data-nav="mis-entradas">Mis entradas</a>
+      <a href="#organizacion" data-nav="organizacion" id="nav-admin" class="hidden">Organización</a>
+    </nav>
+    <div class="session">
+      <span id="me-email" class="muted"></span>
+      <a href="#acceso" id="login-link" class="btn small">Entrar</a>
+      <button id="logout-btn" class="btn small ghost hidden">Salir</button>
+    </div>
+  </header>
+
+  <div id="dev-banner" class="dev-banner hidden">
+    Modo de prueba: no hay servidor de correo configurado. Los correos (y los códigos de acceso) se muestran en la consola del servidor.
+  </div>
+
+  <main>
+    <!-- ======================= Jornadas ======================= -->
+    <section id="view-jornadas" class="view">
+      <div class="hero">
+        <h1>Usamos nuestros moscosos para que se nos escuche.</h1>
+        <p>Cada jornada tiene <strong id="hero-plazas">100</strong> entradas gratuitas por provincia. Reserva la tuya, sube la autorización de tu día de permiso y te diremos dónde nos encontramos.</p>
+        <ol class="steps">
+          <li><strong>Pide tu moscoso</strong> en tu centro y consigue la autorización firmada por la dirección.</li>
+          <li><strong>Reserva tu entrada</strong> con tu correo <span class="domain">@edu.gva.es</span> y sube la autorización.</li>
+          <li><strong>Recibe el punto de encuentro</strong> por correo 24–48 h antes: el acto institucional del President o de la Consellera en tu provincia o, si no hay ninguno, la Direcció Territorial d'Educació.</li>
+        </ol>
+      </div>
+
+      <div class="filters" id="province-filter"></div>
+      <div id="jornadas-list" class="jornadas-list"><p class="muted">Cargando jornadas…</p></div>
+      <p class="muted small live-note">Las entradas disponibles se actualizan solas cada pocos segundos.</p>
+    </section>
+
+    <!-- ======================= Detalle de jornada ======================= -->
+    <section id="view-jornada" class="view hidden">
+      <a href="#jornadas" class="back">← Todas las jornadas</a>
+      <div id="jornada-detail"></div>
+    </section>
+
+    <!-- ======================= Acceso ======================= -->
+    <section id="view-acceso" class="view hidden">
+      <div class="card narrow">
+        <h2>Entra con tu correo corporativo</h2>
+        <p class="muted">Te enviaremos un código de 6 cifras a tu buzón <span class="domain">@edu.gva.es</span>. Así sabemos que eres docente y evitamos reservas falsas.</p>
+
+        <form id="email-form">
+          <label for="login-email">Correo corporativo</label>
+          <input id="login-email" type="email" inputmode="email" autocomplete="email" placeholder="nom.cognom@edu.gva.es" required />
+          <button type="submit" class="btn primary">Enviarme el código</button>
+        </form>
+
+        <form id="code-form" class="hidden">
+          <p>Hemos enviado un código a <strong id="code-email"></strong>. Mira también en la carpeta de spam.</p>
+          <label for="login-code">Código</label>
+          <input id="login-code" inputmode="numeric" autocomplete="one-time-code" maxlength="7" placeholder="123456" required />
+          <button type="submit" class="btn primary">Entrar</button>
+          <button type="button" id="code-back" class="btn ghost">Usar otro correo</button>
+        </form>
+
+        <p id="acceso-error" class="error hidden"></p>
+      </div>
+    </section>
+
+    <!-- ======================= Mis entradas ======================= -->
+    <section id="view-mis-entradas" class="view hidden">
+      <h2>Mis entradas</h2>
+      <div id="mis-entradas-list"></div>
+    </section>
+
+    <!-- ======================= Organización ======================= -->
+    <section id="view-organizacion" class="view hidden">
+      <h2>Organización</h2>
+      <div class="admin-tools card">
+        <button id="generar-btn" class="btn">Generar próximas jornadas</button>
+        <form id="nueva-jornada-form" class="inline-form">
+          <input type="date" id="nj-fecha" required aria-label="Fecha" />
+          <select id="nj-provincia" aria-label="Provincia"></select>
+          <input type="number" id="nj-plazas" min="1" max="5000" aria-label="Entradas" placeholder="Entradas" />
+          <button type="submit" class="btn">Crear jornada</button>
+        </form>
+        <p id="admin-msg" class="muted small"></p>
+      </div>
+      <div id="admin-list"></div>
+    </section>
+
+    <section id="view-organizacion-jornada" class="view hidden">
+      <a href="#organizacion" class="back">← Panel de organización</a>
+      <div id="admin-detail"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>Docent en Lluita · Plataforma autogestionada por el profesorado.</p>
+    <details>
+      <summary>Protección de datos</summary>
+      <div id="privacy-text"></div>
+    </details>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
